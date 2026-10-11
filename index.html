@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TecDoc 2Q 2023 | Master Automotive Catalog & SQL Explorer Studio</title>
+  <meta name="description" content="Interactive TecDoc 2Q 2023 Automotive Database & SQL Workbench. Browse vehicle hierarchies, part cross-references, exploded diagram coordinates, license plate lookups, and run all 25 TecDoc queries.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Top App Bar -->
+  <header class="app-header" id="app-header">
+    <div class="header-left">
+      <div class="logo-badge">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2v20M2 12h20M12 6a6 6 0 0 1 6 6M6 12a6 6 0 0 1 6-6"></path>
+        </svg>
+        <span class="logo-glow"></span>
+      </div>
+      <div class="header-titles">
+        <h1 class="app-title">TECDOC <span class="highlight">2Q 2023</span> <span class="badge-tag">STUDIO</span></h1>
+        <p class="app-subtitle">Automotive Parts & Vehicle Database Explorer · 42 Production Queries (2023, 2018 Legacy & 2017 Delta)</p>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="engine-status" id="engine-status">
+        <span class="status-dot"></span>
+        <span class="status-label">Engine:</span>
+        <span class="status-mode" id="status-mode-text">TecDoc 2Q 2023 Virtual Database</span>
+      </div>
+      <div class="stat-pill">
+        <span class="pill-number">42</span>
+        <span class="pill-label">SQL Queries</span>
+      </div>
+      <div class="stat-pill">
+        <span class="pill-number">84</span>
+        <span class="pill-label">Tables</span>
+      </div>
+      <div class="stat-pill">
+        <span class="pill-number">32</span>
+        <span class="pill-label">Languages</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="lang-selector-wrap">
+        <label for="global-lang-select" class="lang-icon">🌐</label>
+        <select id="global-lang-select" class="form-select lang-select" aria-label="Select TecDoc Language">
+          <option value="4" selected>EN - English (@LNGID=4)</option>
+          <option value="1">DE - Deutsch (@LNGID=1)</option>
+          <option value="6">FR - French (@LNGID=6)</option>
+          <option value="7">IT - Italian (@LNGID=7)</option>
+          <option value="8">ES - Spanish (@LNGID=8)</option>
+          <option value="16">RU - Russian (@LNGID=16)</option>
+          <option value="14">PL - Polish (@LNGID=14)</option>
+          <option value="17">TR - Turkish (@LNGID=17)</option>
+        </select>
+      </div>
+
+      <button id="btn-db-config" class="btn btn-secondary btn-icon" title="Database Connection Settings">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C6.5 2 2 3.8 2 6v12c0 2.2 4.5 4 10 4s10-1.8 10-4V6c0-2.2-4.5-4-10-4z"></path>
+          <path d="M2 12c0 2.2 4.5 4 10 4s10-1.8 10-4"></path>
+          <path d="M2 6c0 2.2 4.5 4 10 4s10-1.8 10-4"></path>
+        </svg>
+        <span>MySQL Config</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tab Bar -->
+  <nav class="main-nav" id="main-nav" aria-label="Main Navigation">
+    <div class="nav-container">
+      <button class="nav-tab active" data-tab="workbench" id="tab-btn-workbench">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>SQL Workbench</span>
+        <span class="tab-badge">42</span>
+      </button>
+
+      <button class="nav-tab" data-tab="vehicles" id="tab-btn-vehicles">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H7.5a1 1 0 0 0-.8.4L4 11l-5.16.86A1 1 0 0 0-2 12.85V16h3m14 0a2 2 0 1 1-4 0m-8 0a2 2 0 1 1-4 0"></path>
+        </svg>
+        <span>Vehicle Navigator</span>
+      </button>
+
+      <button class="nav-tab" data-tab="parts" id="tab-btn-parts">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+        </svg>
+        <span>Part & Cross Explorer</span>
+      </button>
+
+      <button class="nav-tab" data-tab="schematics" id="tab-btn-schematics">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="22" y1="12" x2="18" y2="12"></line>
+          <line x1="6" y1="12" x2="2" y2="12"></line>
+          <line x1="12" y1="6" x2="12" y2="2"></line>
+          <line x1="12" y1="22" x2="12" y2="18"></line>
+        </svg>
+        <span>Exploded Schematics</span>
+        <span class="tab-badge pulse">Interactive</span>
+      </button>
+
+      <button class="nav-tab" data-tab="plates" id="tab-btn-plates">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+          <line x1="7" y1="12" x2="17" y2="12"></line>
+          <line x1="7" y1="9" x2="9" y2="9"></line>
+          <line x1="7" y1="15" x2="9" y2="15"></line>
+        </svg>
+        <span>Plates & VIN Decoder</span>
+        <span class="tab-badge" style="background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-color: rgba(0, 229, 255, 0.3);">ISO 3779</span>
+      </button>
+
+      <button class="nav-tab" data-tab="schema" id="tab-btn-schema">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+        </svg>
+        <span>DB Health & ER Map</span>
+      </button>
+
+      <button class="nav-tab" data-tab="sdk" id="tab-btn-sdk">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        <span>TecDoc SDK & API</span>
+        <span class="tab-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3);">Pegasus 3.0</span>
+      </button>
+
+      <button class="nav-tab" data-tab="autodoc" id="tab-btn-autodoc">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1"></path>
+          <path d="M18 14h4"></path>
+          <path d="M18 18h4"></path>
+          <path d="M22 6v14a2 2 0 0 1-2 2H6"></path>
+          <path d="M6 8h4"></path>
+          <path d="M6 12h6"></path>
+        </svg>
+        <span>Autodoc Portal & News</span>
+        <span class="tab-badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3);">News & Tech</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- App Main Content Area -->
+  <main class="app-main" id="app-main">
+    <!-- Quick Start Guide & Easy Understanding Explorer -->
+    <div class="easy-guide-banner glass-panel" id="easy-guide-banner">
+      <div class="guide-header-row">
+        <div class="guide-title-box">
+          <span class="guide-badge">QUICK START GUIDE</span>
+          <h2>Automotive Catalog & TecDoc 2Q 2023 Explorer</h2>
+          <p>Explore European vehicle models, replacement parts, exploded schematics, VIN rules, and database queries. Choose a tool below:</p>
+        </div>
+        <div class="universal-search-box">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="universal-search-input" placeholder="Quick Search: e.g. BMW, VIN, 20430, Golf, 2VXT04..." aria-label="Universal Quick Search">
+          </div>
+          <button id="btn-universal-search" class="btn btn-primary btn-sm">Find Now</button>
+        </div>
+      </div>
+
+      <!-- Quick Action Cards Grid -->
+      <div class="quick-nav-cards">
+        <button class="quick-nav-card" data-target="vehicles" title="Browse car brands and specifications">
+          <div class="qnc-icon">🚗</div>
+          <div class="qnc-text">
+            <strong>Vehicle Catalog</strong>
+            <span>Browse BMW, Audi, Mercedes models & specs</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="parts" title="Search part numbers and OEM cross-references">
+          <div class="qnc-icon">📦</div>
+          <div class="qnc-text">
+            <strong>Part & Crosses</strong>
+            <span>Lookup parts (e.g. 20430, 032025) & OE numbers</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="schematics" title="Inspect interactive exploded diagrams">
+          <div class="qnc-icon">📐</div>
+          <div class="qnc-text">
+            <strong>Diagram Hotspots</strong>
+            <span>Interactive exploded blueprints with clickable hotspots</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="plates" title="Decode vehicle license plates and 17-char VINs">
+          <div class="qnc-icon">🪪</div>
+          <div class="qnc-text">
+            <strong>VIN & Plate Decoders</strong>
+            <span>Decode 17-char VINs, German KBA, Dutch & French plates</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="workbench" title="Open SQL Workbench developer console">
+          <div class="qnc-icon">⚡</div>
+          <div class="qnc-text">
+            <strong>SQL Workbench</strong>
+            <span>Execute 42 database queries & export data</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="sdk" title="Open TecDoc SDK & Pegasus 3.0 Developer Studio">
+          <div class="qnc-icon">💻</div>
+          <div class="qnc-text">
+            <strong>TecDoc SDK & API</strong>
+            <span>Pegasus 3.0 REST/JSON & Multi-Language Code Generator</span>
+          </div>
+        </button>
+
+        <button class="quick-nav-card" data-target="autodoc" title="Open Autodoc Automotive News & Technical Portal">
+          <div class="qnc-icon">📰</div>
+          <div class="qnc-text">
+            <strong>Autodoc Portal</strong>
+            <span>Technical bulletins, aftermarket news & articles</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB 1: SQL WORKBENCH -->
+    <section class="tab-content active" id="view-workbench">
+      <div class="workbench-layout">
+        <!-- Sidebar: Query Library -->
+        <aside class="query-sidebar" id="query-sidebar">
+          <div class="sidebar-header">
+            <h2 class="sidebar-title">TecDoc Queries</h2>
+            <span class="count-tag" id="sidebar-query-count">25</span>
+          </div>
+
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="query-search-input" class="search-input" placeholder="Search queries, tables, keys..." aria-label="Search queries">
+            <button id="query-search-clear" class="btn-clear" title="Clear search" style="display: none;">&times;</button>
+          </div>
+
+          <div class="category-filters" id="category-filters" role="tablist">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <div class="query-list" id="query-list" role="list">
+            <!-- Rendered dynamically -->
+          </div>
+        </aside>
+
+        <!-- Main Workbench Pane -->
+        <div class="workbench-main">
+          <!-- Active Query Header Card -->
+          <div class="query-details-card glass-panel" id="query-details-card">
+            <div class="qdc-header">
+              <div class="qdc-title-group">
+                <span class="category-pill" id="active-category-pill">vehicles</span>
+                <h3 class="qdc-title" id="active-query-title">Loading query...</h3>
+                <span class="qdc-file" id="active-query-file">filename.sql</span>
+              </div>
+              <div class="qdc-actions">
+                <button id="btn-copy-sql" class="btn btn-secondary btn-sm" title="Copy raw SQL to clipboard">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Copy SQL</span>
+                </button>
+                <button id="btn-run-query" class="btn btn-primary" title="Execute Query (Ctrl + Enter)">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Execute Query</span>
+                  <kbd class="kbd-shortcut">⌘↵</kbd>
+                </button>
+              </div>
+            </div>
+
+            <p class="qdc-description" id="active-query-description">Description of query...</p>
+
+            <div class="qdc-tables-row">
+              <span class="tables-label">TecDoc Tables Involved:</span>
+              <div class="tables-badges" id="active-tables-badges">
+                <!-- Badges -->
+              </div>
+            </div>
+
+            <!-- Parameters Bar -->
+            <div class="parameters-panel" id="parameters-panel">
+              <div class="params-header">
+                <span class="params-title">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                  </svg>
+                  Active Query Parameters
+                </span>
+                <button id="btn-reset-params" class="btn-text-sm">Reset to Defaults</button>
+              </div>
+              <div class="params-form" id="params-form">
+                <!-- Inputs rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Split View: SQL Code Viewer + Results Table -->
+          <div class="workbench-panels">
+            <!-- SQL Editor Box -->
+            <div class="editor-panel glass-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                  <span>SQL Source View</span>
+                </div>
+                <div class="panel-meta">
+                  <span id="sql-line-count">0 lines</span>
+                </div>
+              </div>
+              <div class="code-container" id="code-container">
+                <pre class="sql-code"><code id="sql-code-display">-- Select a query to inspect SQL code</code></pre>
+              </div>
+            </div>
+
+            <!-- Results Output Box -->
+            <div class="results-panel glass-panel" id="results-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                  <span>Query Results</span>
+                  <span class="status-badge" id="exec-status-badge">READY</span>
+                </div>
+                <div class="panel-meta">
+                  <span class="meta-item" id="exec-time">Execution: 0.00ms</span>
+                  <span class="meta-item" id="exec-rows">Rows: 0</span>
+                  <div class="export-actions">
+                    <button id="btn-export-csv" class="btn btn-secondary btn-xs" title="Export as CSV">CSV</button>
+                    <button id="btn-export-json" class="btn btn-secondary btn-xs" title="Export as JSON">JSON</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="results-table-wrapper" id="results-table-wrapper">
+                <div class="empty-state" id="results-empty-state">
+                  <div class="empty-icon">⚡</div>
+                  <h4>Ready to Execute</h4>
+                  <p>Click "Execute Query" or press <strong>⌘+Enter</strong> to run this SQL against the TecDoc dataset.</p>
+                </div>
+                <table class="data-table" id="data-table" style="display: none;">
+                  <thead id="data-table-head"></thead>
+                  <tbody id="data-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: VEHICLE NAVIGATOR -->
+    <section class="tab-content" id="view-vehicles">
+      <div class="navigator-layout">
+        <div class="nav-breadcrumb-card glass-panel">
+          <div class="section-heading">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h2>TecDoc Multi-Category Vehicle Hierarchy</h2>
+                <p>Drill down from manufacturer brand to model series, engine modifications, and complete technical specifications.</p>
+              </div>
+              <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">TecDoc 2018 & 2023 Multi-Type</span>
+            </div>
+          </div>
+
+          <!-- Vehicle Type Selector Tabs (TecDoc 2018 & 2023 Categories) -->
+          <div class="vehicle-type-tabs" id="vehicle-type-tabs">
+            <button class="vtype-btn active" data-vtype="passenger">🚗 Passenger Cars (PC)</button>
+            <button class="vtype-btn" data-vtype="commercial">🚚 Commercial Vehicles (CV)</button>
+            <button class="vtype-btn" data-vtype="motorbike">🏍️ Motorbikes</button>
+            <button class="vtype-btn" data-vtype="engine">⚙️ Stationary Engines</button>
+            <button class="vtype-btn" data-vtype="axle">🔩 Trailer Axles</button>
+          </div>
+
+          <div class="stepper-bar">
+            <div class="step-item active" id="step-1-indicator">
+              <span class="step-num">1</span>
+              <span class="step-name">Brand (MFA)</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item" id="step-2-indicator">
+              <span class="step-num">2</span>
+              <span class="step-name">Series (MS)</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item" id="step-3-indicator">
+              <span class="step-num">3</span>
+              <span class="step-name">Modification (Type)</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item" id="step-4-indicator">
+              <span class="step-num">4</span>
+              <span class="step-name">Specifications</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vehicle-cascade-grid">
+          <!-- Column 1: Brands -->
+          <div class="cascade-column glass-panel">
+            <div class="column-header">
+              <h3>1. Manufacturers</h3>
+              <input type="text" id="filter-brands" class="filter-input-sm" placeholder="Search brand...">
+            </div>
+            <div class="cascade-list" id="brands-cascade-list">
+              <!-- Brands -->
+            </div>
+          </div>
+
+          <!-- Column 2: Series -->
+          <div class="cascade-column glass-panel">
+            <div class="column-header">
+              <h3>2. Model Series</h3>
+              <span class="column-subtitle" id="selected-brand-label">Select a brand</span>
+            </div>
+            <div class="cascade-list" id="series-cascade-list">
+              <div class="column-placeholder">Please select a brand from column 1.</div>
+            </div>
+          </div>
+
+          <!-- Column 3: Modifications -->
+          <div class="cascade-column glass-panel">
+            <div class="column-header">
+              <h3>3. Engines & Models</h3>
+              <span class="column-subtitle" id="selected-series-label">Select a series</span>
+            </div>
+            <div class="cascade-list" id="models-cascade-list">
+              <div class="column-placeholder">Please select a model series.</div>
+            </div>
+          </div>
+
+          <!-- Column 4: Detailed Specifications Card -->
+          <div class="specs-column glass-panel" id="vehicle-specs-card">
+            <div class="column-header">
+              <h3>4. Vehicle Technical Sheet</h3>
+              <span class="badge-tag" id="vehicle-id-badge">PC_ID: -</span>
+            </div>
+            <div class="specs-content" id="vehicle-specs-content">
+              <div class="column-placeholder">Select a vehicle model to view full TecDoc criteria and technical datasheet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PART & CROSS EXPLORER -->
+    <section class="tab-content" id="view-parts">
+      <div class="parts-explorer-layout">
+        <!-- Search Bar Hero -->
+        <div class="part-search-hero glass-panel">
+          <h2>TecDoc Part Number & Cross-Reference Explorer</h2>
+          <p>Lookup any spare part article number, OEM cross-reference, technical dimensions, and application fitments.</p>
+          <div class="search-form-row">
+            <div class="part-input-wrapper">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" id="part-search-input" class="part-input" placeholder="Enter article or OE number (e.g. 20430, 1EJ 004 440-121, 032025)..." value="20430">
+            </div>
+            <button id="btn-search-part" class="btn btn-primary btn-lg">Search Article</button>
+          </div>
+          <div class="quick-tags">
+            <span class="tag-label">Quick Examples:</span>
+            <button class="pill-tag" data-part="20430">SPIDAN 20430 (Bellow Kit)</button>
+            <button class="pill-tag" data-part="1EJ 004 440-121">HELLA 1EJ 004 440-121 (Headlight)</button>
+            <button class="pill-tag" data-part="032025">EBERSPÄCHER 032025 (Exhaust System)</button>
+            <button class="pill-tag" data-part="31607565315">OE: BMW 31 60 7 565 315</button>
+          </div>
+        </div>
+
+        <!-- Part Details Card -->
+        <div class="part-results-grid" id="part-results-grid">
+          <!-- Overview Card -->
+          <div class="part-main-card glass-panel">
+            <div class="pmc-header">
+              <div class="pmc-brand-box">
+                <span class="brand-name" id="part-card-brand">SPIDAN</span>
+                <span class="part-number" id="part-card-number">20430</span>
+              </div>
+              <div class="pmc-status-box">
+                <span class="status-indicator">● Active</span>
+                <span class="art-id-tag" id="part-card-artid">ART_ID: 1878343</span>
+              </div>
+            </div>
+            <h3 class="pmc-title" id="part-card-title">Bellow Kit, drive shaft boot</h3>
+            <div class="pmc-meta-row">
+              <div class="meta-field">
+                <span class="label">EAN Barcode:</span>
+                <span class="val" id="part-card-ean">4019064204301</span>
+              </div>
+              <div class="meta-field">
+                <span class="label">Packing Unit:</span>
+                <span class="val" id="part-card-packaging">1 kit</span>
+              </div>
+              <div class="meta-field">
+                <span class="label">Generic Article ID:</span>
+                <span class="val" id="part-card-generic">800</span>
+              </div>
+            </div>
+
+            <!-- Technical Criteria Section -->
+            <div class="criteria-section">
+              <h4>Technical Specifications & Criteria</h4>
+              <div class="criteria-grid" id="part-criteria-grid">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Accessories / BOM Components -->
+            <div class="bom-section" id="part-bom-section">
+              <h4 id="part-bom-title">Included Accessories / BOM Components</h4>
+              <div class="bom-list" id="part-bom-list">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Cross References & Vehicle Fitment -->
+          <div class="part-side-cards">
+            <!-- Cross-References Card -->
+            <div class="crosses-card glass-panel">
+              <div class="card-top">
+                <h4>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 3h5v5"></path>
+                    <path d="M4 20L21 3"></path>
+                    <path d="M21 16v5h-5"></path>
+                    <path d="M15 15l6 6"></path>
+                    <path d="M4 4l5 5"></path>
+                  </svg>
+                  Cross-References & OEM Analogs
+                </h4>
+                <span class="badge-tag" id="crosses-count-badge">6 crosses</span>
+              </div>
+              <div class="crosses-table-wrap">
+                <table class="table-compact">
+                  <thead>
+                    <tr>
+                      <th>Manufacturer / Brand</th>
+                      <th>Reference Number</th>
+                      <th>Cross Type</th>
+                    </tr>
+                  </thead>
+                  <tbody id="crosses-table-body">
+                    <!-- Crosses -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Vehicle Fitment Card -->
+            <div class="fitment-card glass-panel">
+              <div class="card-top">
+                <h4>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                  </svg>
+                  Vehicle Compatibility & Fitment
+                </h4>
+                <span class="badge-tag" id="fitment-count-badge">4 models</span>
+              </div>
+              <div class="fitment-list" id="fitment-list">
+                <!-- Fitments -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: EXPLODED SCHEMATICS (SENSITIVE COORDINATES) -->
+    <section class="tab-content" id="view-schematics">
+      <div class="schematics-layout">
+        <div class="schematics-header-card glass-panel">
+          <div class="section-heading">
+            <h2>Exploded Diagram Hotspots & Coordinates Viewer</h2>
+            <p>Visual demonstration of TecDoc Query: <code>Exploded Diagram Coordinates (SEN_COORD)</code>. Hover or click interactive coordinate bounding boxes on the component assembly diagram.</p>
+          </div>
+          <div class="schematics-meta">
+            <span class="meta-pill">Parent Article: <strong>EBERSPÄCHER 032025</strong></span>
+            <span class="meta-pill">Table: <code>SENSITIVE_COORDINATES</code></span>
+            <span class="meta-pill">Active Coordinates: <strong id="hotspots-count">5 Hotspots</strong></span>
+          </div>
+        </div>
+
+        <div class="schematics-canvas-wrapper glass-panel">
+          <!-- Canvas Overlay Area -->
+          <div class="diagram-viewport" id="diagram-viewport">
+            <svg id="schematic-svg" class="schematic-svg" viewBox="0 0 900 480" preserveAspectRatio="xMidYMid meet">
+              <!-- Grid background -->
+              <defs>
+                <pattern id="blueprint-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                  <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(56, 189, 248, 0.08)" stroke-width="1"></path>
+                </pattern>
+                <linearGradient id="pipe-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"></stop>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.8"></stop>
+                </linearGradient>
+              </defs>
+              <rect width="900" height="480" fill="url(#blueprint-grid)"></rect>
+
+              <!-- Stylized Exploded Exhaust Diagram Illustration -->
+              <g class="diagram-drawing" transform="translate(40, 40)">
+                <!-- Front Flange -->
+                <path d="M 190 230 C 190 200, 260 200, 260 230 L 260 250 C 260 280, 190 280, 190 250 Z" fill="rgba(56, 189, 248, 0.15)" stroke="#38bdf8" stroke-width="2.5"></path>
+                <circle cx="205" cy="225" r="5" fill="#38bdf8"></circle>
+                <circle cx="245" cy="225" r="5" fill="#38bdf8"></circle>
+
+                <!-- Pipe 1 -->
+                <path d="M 260 240 Q 290 240 320 230" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"></path>
+
+                <!-- Center Resonator -->
+                <rect x="320" y="195" width="130" height="70" rx="35" fill="rgba(14, 165, 233, 0.2)" stroke="#0ea5e9" stroke-width="2.5"></rect>
+                <line x1="335" y1="210" x2="435" y2="210" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="4 4"></line>
+                <line x1="335" y1="250" x2="435" y2="250" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="4 4"></line>
+
+                <!-- Pipe 2 S-Curve -->
+                <path d="M 450 230 C 480 230, 490 210, 520 210" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"></path>
+
+                <!-- Rubber Hanger Bracket -->
+                <rect x="470" y="270" width="60" height="40" rx="10" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="2"></rect>
+                <circle cx="485" cy="290" r="6" fill="#f59e0b"></circle>
+                <circle cx="515" cy="290" r="6" fill="#f59e0b"></circle>
+                <line x1="500" y1="230" x2="500" y2="270" stroke="#94a3b8" stroke-width="2" stroke-dasharray="2 2"></line>
+
+                <!-- Rear Main Silencer Box -->
+                <rect x="520" y="160" width="160" height="95" rx="15" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="3"></rect>
+                <rect x="535" y="175" width="130" height="65" rx="8" fill="none" stroke="#6366f1" stroke-width="1" stroke-dasharray="3 3"></rect>
+
+                <!-- Chrome Tip -->
+                <path d="M 680 210 L 755 210 L 765 245 L 680 245 Z" fill="rgba(236, 72, 153, 0.25)" stroke="#ec4899" stroke-width="2.5"></path>
+                <ellipse cx="760" cy="227" rx="8" ry="17" fill="rgba(236, 72, 153, 0.3)" stroke="#ec4899" stroke-width="1.5"></ellipse>
+
+                <!-- Centerlines & Dimension arrows -->
+                <line x1="160" y1="240" x2="790" y2="240" stroke="rgba(148, 163, 184, 0.3)" stroke-width="1" stroke-dasharray="6 6"></line>
+              </g>
+
+              <!-- DYNAMIC INTERACTIVE HOTSPOT OVERLAYS -->
+              <g id="hotspots-layer">
+                <!-- Dynamically populated hotspot rectangles -->
+              </g>
+            </svg>
+
+            <!-- Floating Hover Tooltip -->
+            <div id="hotspot-tooltip" class="hotspot-tooltip" style="display: none;">
+              <div class="tooltip-art" id="tooltip-art">ART_NR</div>
+              <div class="tooltip-name" id="tooltip-name">Component Name</div>
+              <div class="tooltip-coords" id="tooltip-coords">X: 0, Y: 0 (W: 0, H: 0)</div>
+            </div>
+          </div>
+
+          <!-- Hotspots Breakdown Sidebar -->
+          <div class="schematics-sidebar">
+            <h4 class="sidebar-subhead">TecDoc Sensitive Coordinate Breakdown</h4>
+            <div class="hotspots-table-container">
+              <table class="table-compact" id="hotspots-list-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Component & Number</th>
+                    <th>X, Y Coordinates</th>
+                    <th>Dimensions</th>
+                  </tr>
+                </thead>
+                <tbody id="hotspots-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="sql-preview-box">
+              <span class="code-title">SQL Query Applied:</span>
+              <code>SELECT SEN_COORD_ID, SEN_COORD_X, SEN_COORD_Y, SEN_COORD_WIDTH, SEN_COORD_HEIGHT FROM SENSITIVE_COORDINATES WHERE ART_PARENT_GRP_ID = 373681;</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: PLATES & VIN DECODER -->
+    <section class="tab-content" id="view-plates">
+      <div class="plates-layout">
+        <div class="plates-intro glass-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h2>Global VIN Rules & European Registration Decoders</h2>
+              <p>Decode 17-character VINs with ISO 3779 / ISO 3780 rules (1,350+ manufacturers, modulo-11 check digit verification, model years) alongside TecDoc queries for German KBA, Dutch Kenteken, and French Cartes Grises.</p>
+            </div>
+            <span class="badge-tag" style="background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 229, 255, 0.3); font-size: 0.8rem; padding: 6px 12px;">ISO 3779 / ISO 3780 Standard</span>
+          </div>
+        </div>
+
+        <!-- VIN (Vehicle Identification Number) Decoder Hero Card -->
+        <div class="vin-decoder-hero glass-panel">
+          <div class="vin-hero-header">
+            <div class="vin-header-title">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="country-badge de" style="background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border-color: rgba(0, 229, 255, 0.3);">🌐 ISO 3779 / 3780</span>
+                <h3>Global VIN Anatomy & Modulo-11 Check Digit Engine</h3>
+              </div>
+              <p>Enter any 17-character VIN to instantly decode WMI (Manufacturer & Origin), VDS (Vehicle Attributes), Modulo-11 Check Digit, and VIS (Model Year & Production Sequence).</p>
+            </div>
+            <div class="vin-quick-samples">
+              <span style="font-size: 0.72rem; color: var(--text-subtle); margin-right: 4px;">Quick Samples:</span>
+              <button class="btn btn-secondary btn-xs vin-sample-btn" data-vin="WBAUR31050E123456">BMW 1M (Valid)</button>
+              <button class="btn btn-secondary btn-xs vin-sample-btn" data-vin="WVWZZZ1KZ9W123456">VW Golf (Europe)</button>
+              <button class="btn btn-secondary btn-xs vin-sample-btn" data-vin="1FAFP53U11F123456">Ford USA (Check: 1)</button>
+              <button class="btn btn-secondary btn-xs vin-sample-btn" data-vin="WDB2040491A123456">Mercedes (Check: 1)</button>
+              <button class="btn btn-secondary btn-xs vin-sample-btn" data-vin="VF1KZ0B0641123456">Renault Megane</button>
+            </div>
+          </div>
+
+          <div class="vin-input-row">
+            <div class="vin-field-wrap">
+              <input type="text" id="vin-input" class="vin-input" maxlength="17" placeholder="ENTER 17-CHAR VIN (e.g. WBAUR31050E123456)" value="WBAUR31050E123456" spellcheck="false" autocomplete="off">
+              <span id="vin-char-counter" class="vin-counter">17 / 17</span>
+            </div>
+            <button id="btn-decode-vin" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Decode VIN</span>
+            </button>
+          </div>
+
+          <!-- Dynamic 17-character visual anatomy segmentation bar -->
+          <div id="vin-anatomy-bar" class="vin-anatomy-bar">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Decoded Results Grid -->
+          <div id="vin-results-grid" class="vin-results-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <div class="plate-decoders-grid">
+          <!-- Card 1: German KBA -->
+          <div class="plate-card glass-panel">
+            <div class="plate-card-header">
+              <span class="country-badge de">🇩🇪 GERMANY</span>
+              <h3>KBA-Nummer (HSN / TSN)</h3>
+            </div>
+            <p class="plate-desc">Kraftfahrt-Bundesamt official manufacturer (HSN) and model (TSN) key number lookup.</p>
+            <div class="plate-input-group">
+              <input type="text" id="kba-input" class="plate-input" value="0005/AZC" placeholder="e.g. 0005/AZC">
+              <button id="btn-decode-kba" class="btn btn-primary">Decode KBA</button>
+            </div>
+            <div class="plate-result" id="kba-result">
+              <div class="result-box">
+                <div class="result-brand">BMW 1 Coupe (E82) M</div>
+                <div class="result-specs">3.0 TwinPower Turbo · 250 kW (340 HP) · 2,979 ccm · 2011-2012</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Dutch Kenteken -->
+          <div class="plate-card glass-panel">
+            <div class="plate-card-header">
+              <span class="country-badge nl">🇳🇱 NETHERLANDS</span>
+              <h3>Kenteken License Plate</h3>
+            </div>
+            <p class="plate-desc">RDW Netherlands vehicle registration number directly linked via <code>TYPE_NUMBERS</code>.</p>
+            <div class="plate-input-group">
+              <div class="nl-plate-box">
+                <span class="nl-flag">NL</span>
+                <input type="text" id="kenteken-input" class="plate-input-nl" value="2VXT04" placeholder="2-VXT-04">
+              </div>
+              <button id="btn-decode-kenteken" class="btn btn-primary">Decode Plate</button>
+            </div>
+            <div class="plate-result" id="kenteken-result">
+              <div class="result-box">
+                <div class="result-brand">VOLKSWAGEN Golf VII (5G1) 2.0 TDI</div>
+                <div class="result-specs">CRBC Engine · 110 kW (150 HP) · 1,968 ccm · 2012-2020</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: French Carte Grise -->
+          <div class="plate-card glass-panel">
+            <div class="plate-card-header">
+              <span class="country-badge fr">🇫🇷 FRANCE</span>
+              <h3>Cartes Grises (CNIT / Type Mines)</h3>
+            </div>
+            <p class="plate-desc">National French type approval code from Certificat d'immatriculation (Field D.2.1).</p>
+            <div class="plate-input-group">
+              <input type="text" id="cartes-input" class="plate-input" value="M10MCDVPUL07391" placeholder="e.g. M10MCDVPUL07391">
+              <button id="btn-decode-cartes" class="btn btn-primary">Decode Carte</button>
+            </div>
+            <div class="plate-result" id="cartes-result">
+              <div class="result-box">
+                <div class="result-brand">RENAULT Megane III Grandtour (KZ0/1)</div>
+                <div class="result-specs">1.5 dCi eco2 · 81 kW (110 HP) · 1,461 ccm · 2009-2015</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: DB HEALTH & SCHEMA -->
+    <section class="tab-content" id="view-schema">
+      <div class="schema-layout">
+        <div class="schema-intro glass-panel">
+          <h2>TecDoc 2Q 2023 Database Performance & ER Architecture</h2>
+          <p>Analysis of table and index storage footprints (<code>Table Storage Footprint</code>), unused index auditing (<code>Unused Indexes Audit</code>), and the core relational ER model.</p>
+        </div>
+
+        <div class="schema-dashboard-grid">
+          <!-- Card: Table & Index Footprint -->
+          <div class="schema-card glass-panel">
+            <div class="card-head">
+              <h3>Database Storage Footprint (IndexGB vs DataGB)</h3>
+              <span class="badge-tag">Query: Table Storage Sizes</span>
+            </div>
+            <div class="storage-bars-list" id="storage-bars-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Card: Unused Indexes Audit -->
+          <div class="schema-card glass-panel">
+            <div class="card-head">
+              <h3>Unused Index Audit & Recommendations</h3>
+              <span class="badge-tag warning">Query: Unused Indexes Audit</span>
+            </div>
+            <div class="unused-indexes-list" id="unused-indexes-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Relational ER Diagram Card -->
+        <div class="er-diagram-card glass-panel">
+          <h3>TecDoc 2Q 2023 Core Entity Relationship Map</h3>
+          <p>Visual map showing relational keys connecting vehicles, articles, search trees, and cross-reference lookups.</p>
+          <div class="er-canvas-container">
+            <svg class="er-svg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet">
+              <!-- Connectors -->
+              <path d="M 200 80 L 320 80" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 4"></path>
+              <path d="M 480 80 L 600 80" stroke="#38bdf8" stroke-width="2"></path>
+              <path d="M 680 130 L 680 200" stroke="#10b981" stroke-width="2"></path>
+              <path d="M 600 250 L 480 250" stroke="#10b981" stroke-width="2"></path>
+              <path d="M 320 250 L 200 250" stroke="#f59e0b" stroke-width="2"></path>
+              <path d="M 680 80 L 820 80" stroke="#ec4899" stroke-width="2"></path>
+
+              <!-- Node 1: MANUFACTURERS -->
+              <g transform="translate(40, 40)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#38bdf8" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#38bdf8" font-weight="bold" font-size="13">MANUFACTURERS</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">PK: MFA_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">MFA_BRAND, MFA_PC</text>
+              </g>
+
+              <!-- Node 2: MODELS_SERIES -->
+              <g transform="translate(320, 40)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#38bdf8" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#38bdf8" font-weight="bold" font-size="13">MODELS_SERIES</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">PK: MS_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">FK: MS_MFA_ID</text>
+              </g>
+
+              <!-- Node 3: PASSENGER_CARS -->
+              <g transform="translate(600, 40)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#38bdf8" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#38bdf8" font-weight="bold" font-size="13">PASSENGER_CARS</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">PK: PC_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">FK: PC_MS_ID, MFA_ID</text>
+              </g>
+
+              <!-- Node 4: TYPE_NUMBERS (Plates) -->
+              <g transform="translate(820, 40)">
+                <rect width="150" height="85" rx="8" fill="#131e33" stroke="#ec4899" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#ec4899" font-weight="bold" font-size="13">TYPE_NUMBERS</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">KBA_NUM, KENTEKEN</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">FK: PC_ID</text>
+              </g>
+
+              <!-- Node 5: LINK_LA_PR / FITMENT -->
+              <g transform="translate(600, 200)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#10b981" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#10b981" font-weight="bold" font-size="13">LINK_LA_PR</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">FK: LAP_PC_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">FK: LAP_ART_ID</text>
+              </g>
+
+              <!-- Node 6: ARTICLES -->
+              <g transform="translate(320, 200)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#10b981" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#10b981" font-weight="bold" font-size="13">ARTICLES</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">PK: ART_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">ART_ARTICLE_NR, BRAND</text>
+              </g>
+
+              <!-- Node 7: ART_LOOKUP (Crosses) -->
+              <g transform="translate(40, 200)">
+                <rect width="160" height="85" rx="8" fill="#131e33" stroke="#f59e0b" stroke-width="1.5"></rect>
+                <text x="15" y="25" fill="#f59e0b" font-weight="bold" font-size="13">ART_LOOKUP</text>
+                <text x="15" y="45" fill="#94a3b8" font-size="11">FK: ARL_ART_ID</text>
+                <text x="15" y="65" fill="#94a3b8" font-size="11">ARL_SEARCH_NUMBER</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- TecDoc Schema Evolution: 2018 Transbase vs 2023 Enterprise Relational Model -->
+        <div class="schema-evolution-card glass-panel">
+          <div class="schema-evolution-header">
+            <div>
+              <h3>TecDoc Architecture Evolution: 2018 Transbase / Pegasus vs 2023 Enterprise Schema</h3>
+              <p>Comparative architectural audit of table structures, indexing models, and query patterns across TecDoc generations.</p>
+            </div>
+            <span class="badge-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3);">TecDoc 2018 ⟷ 2023 Map</span>
+          </div>
+
+          <div class="evolution-table-wrap">
+            <table class="evolution-table">
+              <thead>
+                <tr>
+                  <th>TecDoc 2018 Table</th>
+                  <th>TecDoc 2023 Equivalent</th>
+                  <th>Domain & Purpose</th>
+                  <th>Architectural Evolution & Index Differences</th>
+                </tr>
+              </thead>
+              <tbody id="evolution-table-body">
+                <!-- Populated dynamically from TECDOC_2018_SCHEMA_MAP -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Interactive 2018 API Methods Sandbox -->
+          <div style="margin-top: 14px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 6px;">TecDoc 2018 PHP & JS Client SDK Methods (tecdoc.class.php)</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Reference implementations of the 2018 Web Service and Direct MySQL database wrapper methods in English.</p>
+            <div class="api-methods-grid">
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getMakes($type)</span>
+                <span class="amc-desc">Fetch manufacturers by vehicle category ('passenger', 'commercial', 'motorbike', 'engine', 'axle').</span>
+                <pre class="amc-code">SELECT id, description name FROM manufacturers WHERE ispassengercar = 'True' ORDER BY matchcode;</pre>
+              </div>
+
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getModels($makeId, $type)</span>
+                <span class="amc-desc">Fetch model lines with textual constructioninterval for reference make.</span>
+                <pre class="amc-code">SELECT id, description name, constructioninterval FROM models WHERE manufacturerid = 5;</pre>
+              </div>
+
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getSections($carId, $type, $parent)</span>
+                <span class="amc-desc">Recursive assembly tree traversal with dynamic havechild lookahead subqueries.</span>
+                <pre class="amc-code">SELECT id, description, havechild FROM passanger_car_trees WHERE passangercarid = 18371;</pre>
+              </div>
+
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getSectionParts($carId, $nodeId)</span>
+                <span class="amc-desc">Fetch linked parts for car modification and assembly tree node (Brake System = 100006).</span>
+                <pre class="amc-code">SELECT al.datasupplierarticlenumber, s.description, prd.description FROM article_links al...</pre>
+              </div>
+
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getOemNumbers($number, $brandId)</span>
+                <span class="amc-desc">Retrieve original car manufacturer OE numbers (article_oe) for supplier part.</span>
+                <pre class="amc-code">SELECT m.description, a.OENbr FROM article_oe a JOIN manufacturers m ON m.id=a.manufacturerId...</pre>
+              </div>
+
+              <div class="api-method-card">
+                <span class="amc-title">Tecdoc::getArtCross($number, $brandId)</span>
+                <span class="amc-desc">Two-hop OE-bridged aftermarket interchange cross reference discovery.</span>
+                <pre class="amc-code">SELECT DISTINCT s.description, c.PartsDataSupplierArticleNumber FROM article_oe a JOIN article_cross c...</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TecDoc 2017 Change Request (CR) Delta Catalog & Release Specifications -->
+        <div class="schema-evolution-card glass-panel" style="margin-top: 20px;">
+          <div class="schema-evolution-header">
+            <div>
+              <h3>TecDoc 2017 Change Request (CR) Delta Catalog & Release Specifications</h3>
+              <p>Change Request (CR) Delta Architecture: 32 Delta tables (<code>cr_*</code>) providing atomic additions (<code>_new</code>), criteria schema revisions (<code>_cng</code>), and deprecations (<code>_del</code>).</p>
+            </div>
+            <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);">TecDoc 2017 CR Deltas</span>
+          </div>
+
+          <div class="evolution-table-wrap">
+            <table class="evolution-table">
+              <thead>
+                <tr>
+                  <th>2017 Delta Table</th>
+                  <th>Domain & Functional Scope</th>
+                  <th>Operation Type</th>
+                  <th>Records Added / Modified</th>
+                  <th>Sample Introduced Entities</th>
+                  <th>Catalog Architectural Impact</th>
+                </tr>
+              </thead>
+              <tbody id="delta-2017-table-body">
+                <!-- Populated dynamically from TECDOC_2017_CR_DELTAS in main.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 3-Era Evolution Timeline Comparison -->
+          <div style="margin-top: 16px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 6px;">TecAlliance Catalog Architecture: 3 Generations Evolution (2017 ➔ 2018 ➔ 2023)</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Evolution from differential delta batches to relational Web Services, to modern high-density normalized relational models.</p>
+            <div class="api-methods-grid">
+              <div class="api-method-card" style="border-left: 3px solid #10b981;">
+                <span class="amc-title" style="color: #34d399;">TecDoc 2017 Era (CR Deltas)</span>
+                <span class="amc-desc">Differential update distribution using 32 Change Request tables (<code>cr_herst_new</code>, <code>cr_fzg_new</code>, <code>cr_genart_cng</code>, <code>cr_achse_new</code>). Enforced SA210 & SA400 mandatory criteria rules.</span>
+                <pre class="amc-code" style="color: #6ee7b7;">SELECT VehManNo, Description FROM cr_herst_new;</pre>
+              </div>
+
+              <div class="api-method-card" style="border-left: 3px solid var(--accent-amber);">
+                <span class="amc-title" style="color: var(--accent-amber);">TecDoc 2018 Era (Transbase / Pegasus)</span>
+                <span class="amc-desc">Unified flat vehicle classification using boolean discriminator columns (<code>ispassengercar</code>, <code>iscommercialvehicle</code>, <code>ismotorbike</code>, <code>isengine</code>, <code>isaxle</code>). EAV attributes & text intervals.</span>
+                <pre class="amc-code" style="color: #fde047;">SELECT id, description FROM manufacturers WHERE ispassengercar = 'True';</pre>
+              </div>
+
+              <div class="api-method-card" style="border-left: 3px solid var(--accent-cyan);">
+                <span class="amc-title" style="color: var(--accent-cyan);">TecDoc 2023 Era (Enterprise 84-Table)</span>
+                <span class="amc-desc">Fully normalized 84-table relational architecture. Multilingual string resolution via <code>get_text(@LNGID)</code>, pixel-accurate blueprint hotspots (<code>SENSITIVE_COORDINATES</code>), and sub-millisecond B-Tree indexing.</span>
+                <pre class="amc-code" style="color: #7dd3fc;">SELECT MFA_BRAND, get_text(MS_NAME_DES, @LNGID)...</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: TECDOC SDK & PEGASUS 3.0 WEB SERVICE STUDIO -->
+    <section class="tab-content" id="view-sdk">
+      <div class="sdk-layout">
+        <!-- SDK Header Card -->
+        <div class="glass-panel" style="padding: 20px 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: #fff;">TecDoc SDK & Pegasus 3.0 Developer Studio</h2>
+                <span class="badge-tag" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">Official ISO / Pegasus 3.0</span>
+              </div>
+              <p style="font-size: 0.84rem; color: var(--text-muted); max-width: 860px;">
+                Official client SDK for automotive aftermarket developers. Test live Pegasus Web Service methods or virtual/direct MySQL queries, customize parameters, and generate ready-to-run code in <strong>JavaScript/TypeScript</strong>, <strong>Python</strong>, <strong>PHP</strong> (<code>tecdoc.class.php</code>), and <strong>cURL</strong>.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <span class="meta-pill">Engine: <strong id="sdk-runtime-mode">Virtual High-Fidelity</strong></span>
+              <span class="meta-pill">Provider ID: <strong>2023</strong></span>
+              <span class="meta-pill">Endpoint: <code>Pegasus 3.0 JSON</code></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Playground: Tester & Code Generator -->
+        <div class="sdk-grid">
+          <!-- Left: Method Tester & Parameter Customizer -->
+          <div class="sdk-panel glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff;">SDK Method Tester</h3>
+              <span class="badge-tag" id="sdk-method-badge" style="background: rgba(0, 229, 255, 0.12); color: var(--accent-cyan);">getManufacturers</span>
+            </div>
+
+            <div class="sdk-form-group">
+              <label class="sdk-form-label" for="sdk-select-method">Choose SDK Method</label>
+              <select id="sdk-select-method" class="sdk-select">
+                <option value="getManufacturers">1. getManufacturers (Linking Target Makes)</option>
+                <option value="getModelSeries">2. getModelSeries (Model Ranges)</option>
+                <option value="getVehicleDetails">3. getVehicleDetails (K-Typ Specs)</option>
+                <option value="searchArticles">4. searchArticles (Article / OE Lookup)</option>
+                <option value="getArticleCrossReferences">5. getArticleCrossReferences (OEM & Aftermarket)</option>
+                <option value="getArticleBOM">6. getArticleBOM (Kit Constituents)</option>
+                <option value="getAssemblyTree">7. getAssemblyTree (Taxonomy Tree)</option>
+                <option value="decodeVin">8. decodeVin (ISO 3779 / 3780 VIN Decoder)</option>
+                <option value="pegasusCall">9. pegasusCall (Raw Pegasus 3.0 Dispatcher)</option>
+              </select>
+            </div>
+
+            <!-- Dynamic Form Fields -->
+            <div id="sdk-dynamic-params" style="display: flex; flex-direction: column; gap: 12px;">
+              <!-- Target Type -->
+              <div class="sdk-form-group" id="sdk-group-target-type">
+                <label class="sdk-form-label" for="sdk-param-target-type">linkingTargetType</label>
+                <select id="sdk-param-target-type" class="sdk-select">
+                  <option value="P">P - Passenger Cars (PC)</option>
+                  <option value="O">O - Commercial Vehicles (CV)</option>
+                  <option value="A">A - Heavy Trailer & Drive Axles</option>
+                  <option value="M">M - Engine / Motor Units</option>
+                </select>
+              </div>
+
+              <!-- Manufacturer / Make ID -->
+              <div class="sdk-form-group" id="sdk-group-manu-id" style="display: none;">
+                <label class="sdk-form-label" for="sdk-param-manu-id">manuId (Manufacturer ID)</label>
+                <select id="sdk-param-manu-id" class="sdk-select">
+                  <option value="16">16 - BMW</option>
+                  <option value="74">74 - MERCEDES-BENZ</option>
+                  <option value="5">5 - AUDI</option>
+                  <option value="121">121 - VOLKSWAGEN</option>
+                  <option value="92">92 - PORSCHE</option>
+                  <option value="111">111 - TOYOTA</option>
+                  <option value="120">120 - VOLVO</option>
+                  <option value="36">36 - FORD</option>
+                </select>
+              </div>
+
+              <!-- Vehicle ID -->
+              <div class="sdk-form-group" id="sdk-group-vehicle-id" style="display: none;">
+                <label class="sdk-form-label" for="sdk-param-vehicle-id">vehicleId (K-Typ ID)</label>
+                <input type="text" id="sdk-param-vehicle-id" class="sdk-input" value="9877" placeholder="e.g. 9877 (BMW M Coupe)">
+              </div>
+
+              <!-- Article Number -->
+              <div class="sdk-form-group" id="sdk-group-article-number" style="display: none;">
+                <label class="sdk-form-label" for="sdk-param-article-number">articleNumber (Part / OE / EAN)</label>
+                <input type="text" id="sdk-param-article-number" class="sdk-input" value="20430" placeholder="e.g. 20430, 0 986 479 155">
+              </div>
+
+              <!-- Article ID -->
+              <div class="sdk-form-group" id="sdk-group-article-id" style="display: none;">
+                <label class="sdk-form-label" for="sdk-param-article-id">articleId</label>
+                <input type="text" id="sdk-param-article-id" class="sdk-input" value="1878343" placeholder="e.g. 1878343 (SPIDAN 20430)">
+              </div>
+
+              <!-- VIN -->
+              <div class="sdk-form-group" id="sdk-group-vin" style="display: none;">
+                <label class="sdk-form-label" for="sdk-param-vin">vin (17-Character VIN)</label>
+                <input type="text" id="sdk-param-vin" class="sdk-input" value="WBAKG71040E123456" maxlength="17" placeholder="17-character VIN">
+              </div>
+
+              <!-- Country & Lang Row -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="sdk-form-group">
+                  <label class="sdk-form-label" for="sdk-param-country">country (ISO 3166)</label>
+                  <select id="sdk-param-country" class="sdk-select">
+                    <option value="DE">DE - Germany</option>
+                    <option value="US">US - United States</option>
+                    <option value="GB">GB - United Kingdom</option>
+                    <option value="FR">FR - France</option>
+                    <option value="IT">IT - Italy</option>
+                    <option value="ES">ES - Spain</option>
+                    <option value="RU">RU - Russia</option>
+                    <option value="TR">TR - Turkey</option>
+                  </select>
+                </div>
+                <div class="sdk-form-group">
+                  <label class="sdk-form-label" for="sdk-param-lang">lang (ISO 639)</label>
+                  <select id="sdk-param-lang" class="sdk-select">
+                    <option value="EN">EN - English</option>
+                    <option value="DE">DE - German</option>
+                    <option value="FR">FR - French</option>
+                    <option value="ES">ES - Spanish</option>
+                    <option value="IT">IT - Italian</option>
+                    <option value="RU">RU - Russian</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Optional API Key -->
+              <div class="sdk-form-group">
+                <label class="sdk-form-label" for="sdk-param-api-key">X-API-Key (Optional TecAlliance Key)</label>
+                <input type="password" id="sdk-param-api-key" class="sdk-input" placeholder="Leave empty for Virtual High-Fidelity Engine">
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <button id="btn-sdk-run" class="btn btn-primary" style="flex: 1;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Run SDK Method</span>
+              </button>
+              <button id="btn-sdk-reset" class="btn btn-secondary" title="Reset parameters">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Code Generator & Live Response Terminal -->
+          <div class="sdk-panel glass-panel">
+            <!-- Code Generator Header & Tabs -->
+            <div class="sdk-code-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.95rem; font-weight: 700; color: #fff;">Client Code Generator</span>
+                <span class="badge-tag" style="background: rgba(34, 197, 94, 0.12); color: #4ade80;">Ready-to-Use</span>
+              </div>
+
+              <div class="sdk-lang-tabs" id="sdk-lang-tabs">
+                <button class="sdk-lang-tab active" data-lang="javascript">JavaScript</button>
+                <button class="sdk-lang-tab" data-lang="typescript">TypeScript</button>
+                <button class="sdk-lang-tab" data-lang="python">Python</button>
+                <button class="sdk-lang-tab" data-lang="php">PHP</button>
+                <button class="sdk-lang-tab" data-lang="curl">cURL</button>
+              </div>
+
+              <button id="btn-sdk-copy-code" class="btn btn-secondary" style="font-size: 0.76rem; padding: 4px 10px;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy Snippet</span>
+              </button>
+            </div>
+
+            <!-- Code Display -->
+            <pre class="sdk-code-display" id="sdk-code-display">// Generating client snippet...</pre>
+
+            <!-- Live Response Terminal -->
+            <div class="sdk-response-wrapper">
+              <div class="sdk-response-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <strong style="color: #fff;">Live SDK Response</strong>
+                  <span id="sdk-resp-badge" class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">200 OK</span>
+                </div>
+                <span id="sdk-resp-time" style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem;">Latency: 0 ms</span>
+              </div>
+              <pre class="sdk-response-view" id="sdk-response-view">// Click "Run SDK Method" above to view live payload...</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pegasus 3.0 Web Service Endpoints Reference -->
+        <div class="schema-evolution-card glass-panel" style="margin-top: 10px;">
+          <div class="schema-evolution-header">
+            <div>
+              <h3>TecAlliance Pegasus 3.0 Web Service Endpoints & Protocol Reference</h3>
+              <p>Official specifications for Pegasus 3.0 REST/JSON and SOAP protocols, authentication schemes, and response structures.</p>
+            </div>
+            <span class="badge-tag" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">Pegasus 3.0 Architecture</span>
+          </div>
+
+          <div class="evolution-table-wrap">
+            <table class="evolution-table">
+              <thead>
+                <tr>
+                  <th>Service Name</th>
+                  <th>Dialect</th>
+                  <th>Official Endpoint URL</th>
+                  <th>HTTP Method</th>
+                  <th>Payload Format</th>
+                  <th>Authentication</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>TecdocToCat</strong> (Catalog)</td>
+                  <td><span class="table-tag-2017">DLB Bare</span></td>
+                  <td><code>https://webservice.tecalliance.services/pegasus-3-0/services/TecdocToCatDLB.jsonEndpoint</code></td>
+                  <td><span class="badge-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">POST</span></td>
+                  <td><code>application/json</code></td>
+                  <td><code>X-API-Key</code> + <code>provider</code> ID</td>
+                </tr>
+                <tr>
+                  <td><strong>TecdocToCat</strong> (Catalog)</td>
+                  <td><span class="table-tag-2018">DLW Wrapped</span></td>
+                  <td><code>https://webservice.tecalliance.services/pegasus-3-0/services/TecdocToCatDLW.jsonEndpoint</code></td>
+                  <td><span class="badge-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">POST</span></td>
+                  <td><code>application/json</code></td>
+                  <td><code>X-API-Key</code> + <code>provider</code> ID</td>
+                </tr>
+                <tr>
+                  <td><strong>TecdocToBusiness</strong> (Ordering)</td>
+                  <td><span class="table-tag-2017">DLB Bare</span></td>
+                  <td><code>https://webservice.tecalliance.services/pegasus-3-0/services/TecdocToBusinessDLB.jsonEndpoint</code></td>
+                  <td><span class="badge-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">POST</span></td>
+                  <td><code>application/json</code></td>
+                  <td><code>X-API-Key</code> + <code>provider</code> ID</td>
+                </tr>
+                <tr>
+                  <td><strong>TecdocToCat SOAP</strong></td>
+                  <td><span class="table-tag-2023">WSDL / XSD</span></td>
+                  <td><code>https://webservice.tecalliance.services/pegasus-3-0/wsdl/TecdocToCatDLB</code></td>
+                  <td><span class="badge-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">POST</span></td>
+                  <td><code>text/xml (SOAP 1.1)</code></td>
+                  <td>SOAP Security Header</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 8: AUTODOC AUTOMOTIVE PORTAL & TECHNICAL NEWS -->
+    <section class="tab-content" id="view-autodoc" style="display: none;">
+      <div class="autodoc-layout">
+        <!-- Hero Header -->
+        <div class="autodoc-hero-card glass-panel">
+          <div class="autodoc-hero-main">
+            <div class="autodoc-badge-row">
+              <span class="pulse-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+              <span class="badge-label">AUTODOC AUTOMOTIVE AFTERMARKET PORTAL</span>
+              <span class="table-tag-2023">WebAPI & Technical Advisories</span>
+            </div>
+            <h2>Automotive Technical Bulletins & Aftermarket News</h2>
+            <p>Direct integration with the Autodoc WebAPI catalog & technician repair advisories. Browse manufacturer bulletins, aftermarket component guides, and publish technical updates with image attachments.</p>
+            
+            <div class="autodoc-stats-row">
+              <div class="autodoc-stat-pill">
+                <span class="stat-num" id="stat-autodoc-total">6</span>
+                <span class="stat-lbl">Bulletins</span>
+              </div>
+              <div class="autodoc-stat-pill">
+                <span class="stat-num" id="stat-autodoc-cats">5</span>
+                <span class="stat-lbl">Categories</span>
+              </div>
+              <div class="autodoc-stat-pill">
+                <span class="stat-num" style="color: var(--accent-green);">● Active</span>
+                <span class="stat-lbl">WebAPI Engine</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="autodoc-hero-actions">
+            <button id="btn-open-publish-modal" class="btn btn-primary btn-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Publish Technical Bulletin</span>
+            </button>
+            <button id="btn-refresh-autodoc-news" class="btn btn-secondary btn-icon" title="Refresh Live Feed">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span>Refresh Feed</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls Bar -->
+        <div class="autodoc-controls-card glass-panel">
+          <div class="autodoc-search-box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="autodoc-search-input" placeholder="Search by component, topic, automaker, or keyword (e.g. ZF, Brembo, LuK, Piezo, Belt)..." aria-label="Search Bulletins">
+            <button id="btn-clear-autodoc-search" class="btn-clear" style="display: none;" title="Clear search">&times;</button>
+          </div>
+
+          <div class="autodoc-source-toggle">
+            <button class="source-toggle-btn active" data-source="all">All Bulletins</button>
+            <button class="source-toggle-btn" data-source="curated">Technical Guides</button>
+            <button class="source-toggle-btn" data-source="live">Autodoc Live WebAPI</button>
+          </div>
+        </div>
+
+        <!-- Category Pills Bar -->
+        <div class="autodoc-categories-container" id="autodoc-categories-bar">
+          <button class="cat-pill active" data-cat="all">All Topics</button>
+          <button class="cat-pill" data-cat="technical">Technical Bulletins</button>
+          <button class="cat-pill" data-cat="parts">Aftermarket Parts</button>
+          <button class="cat-pill" data-cat="diagnostics">Diagnostics & Tools</button>
+          <button class="cat-pill" data-cat="oe">OE Industry</button>
+          <button class="cat-pill" data-cat="vehicles">New Vehicles</button>
+        </div>
+
+        <!-- News Cards Grid -->
+        <div class="autodoc-cards-grid" id="autodoc-news-grid">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="autodoc-empty-state" class="autodoc-empty-card glass-panel" style="display: none;">
+          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <h4>No Bulletins Match Your Criteria</h4>
+          <p>Try searching for a different aftermarket part, powertrain system, or reset the filters.</p>
+          <button id="btn-reset-autodoc-filters" class="btn btn-secondary">Reset Search & Filters</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Native Modal Dialog: MySQL Connection Configuration -->
+  <dialog id="db-modal" class="modal-dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <h3>TecDoc Database Engine Configuration</h3>
+        </div>
+        <button id="btn-close-modal" class="modal-close-btn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="engine-mode-selector">
+          <label class="radio-card active" id="mode-sim-card">
+            <input type="radio" name="engine-mode" value="virtual" checked>
+            <div class="radio-content">
+              <strong>TecDoc 2Q 2023 Virtual High-Fidelity Engine</strong>
+              <span>Runs instantly in-memory without needing local MySQL setup. Full sample dataset loaded.</span>
+            </div>
+          </label>
+
+          <label class="radio-card" id="mode-live-card">
+            <input type="radio" name="engine-mode" value="mysql">
+            <div class="radio-content">
+              <strong>Connect to Real MySQL Server (tecdoc_2q2023)</strong>
+              <span>Executes SQL directly on your imported TecDoc 2Q 2023 MySQL database server.</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="mysql-settings-form" class="mysql-form" style="display: none;">
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label for="db-host">MySQL Host</label>
+              <input type="text" id="db-host" class="form-input" value="127.0.0.1" placeholder="localhost or 127.0.0.1">
+            </div>
+            <div class="form-group flex-1">
+              <label for="db-port">Port</label>
+              <input type="number" id="db-port" class="form-input" value="3306">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="db-user">Username</label>
+              <input type="text" id="db-user" class="form-input" value="root">
+            </div>
+            <div class="form-group flex-1">
+              <label for="db-pass">Password</label>
+              <input type="password" id="db-pass" class="form-input" placeholder="MySQL password">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="db-name">Database Name</label>
+            <input type="text" id="db-name" class="form-input" value="tecdoc_2q2023">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-cancel-modal" class="btn btn-secondary">Cancel</button>
+        <button id="btn-save-modal" class="btn btn-primary">Save & Apply Settings</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Modal Dialog: Autodoc Article Detail Reader -->
+  <dialog id="autodoc-article-modal" class="modal-dialog">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="badge-tag" id="article-modal-category" style="background: rgba(239, 68, 68, 0.15); color: #f87171;">Technical Bulletin</span>
+          <h3 id="article-modal-title">Article Title</h3>
+        </div>
+        <button id="btn-close-article-modal" class="modal-close-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body autodoc-article-body">
+        <div class="article-meta-bar">
+          <div class="meta-item">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span id="article-modal-date">Date</span>
+          </div>
+          <div class="meta-item">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="article-modal-author">Author</span>
+          </div>
+        </div>
+
+        <div class="article-hero-img-wrap" id="article-hero-img-wrap">
+          <img id="article-modal-img" src="" alt="Article Banner" class="article-hero-img">
+        </div>
+
+        <div class="article-content-html" id="article-modal-content">
+          <!-- Rendered HTML Body -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-dismiss-article-modal" class="btn btn-secondary">Close Bulletin</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Modal Dialog: Publish New Technical Bulletin -->
+  <dialog id="autodoc-publish-modal" class="modal-dialog">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <h3>Publish Technical Bulletin / Aftermarket Article</h3>
+        </div>
+        <button id="btn-close-publish-modal" class="modal-close-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="autodoc-publish-form" class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="publish-title">Bulletin Title *</label>
+            <input type="text" id="publish-title" class="form-input" placeholder="e.g. LuK Dual-Mass Flywheel Alignment Protocol" required>
+          </div>
+          <div class="form-group flex-1">
+            <label for="publish-category">Category *</label>
+            <select id="publish-category" class="form-select">
+              <option value="technical">Technical Bulletins</option>
+              <option value="parts">Aftermarket Parts</option>
+              <option value="diagnostics">Diagnostics & Tools</option>
+              <option value="oe">OE Industry</option>
+              <option value="vehicles">New Vehicles</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="publish-desc">Short Summary / Excerpt *</label>
+          <input type="text" id="publish-desc" class="form-input" placeholder="Brief technical summary (1-2 sentences)" required>
+        </div>
+
+        <div class="form-group">
+          <label for="publish-text">Detailed Technical Content / HTML Body *</label>
+          <textarea id="publish-text" class="form-textarea" rows="6" placeholder="Full technical explanation, torque values, step-by-step procedures..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="publish-image-url">Image URL (WebP / PNG / JPG)</label>
+            <input type="url" id="publish-image-url" class="form-input" placeholder="https://example.com/component.jpg (Optional)">
+          </div>
+          <div class="form-group flex-1">
+            <label for="publish-author">Author / Technician</label>
+            <input type="text" id="publish-author" class="form-input" placeholder="e.g. Master Tech / AutoDoc Workshop">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Or Upload Image from Local Disk (Base64 Preview)</label>
+          <input type="file" id="publish-file-input" accept="image/*" class="form-input">
+          <div id="publish-image-preview-box" class="publish-img-preview" style="display: none; margin-top: 0.5rem;">
+            <img id="publish-preview-img" src="" alt="Selected Preview" style="max-height: 140px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <button type="button" id="btn-remove-preview-img" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">Remove Image</button>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="padding: 1rem 0 0; border-top: 1px solid var(--border-color); margin-top: 1rem;">
+          <button type="button" id="btn-cancel-publish-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">Publish to Feed</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Vite entry script -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

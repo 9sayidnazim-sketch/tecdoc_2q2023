@@ -1,0 +1,241 @@
+// Canonical TecDoc-style auto parts catalogue schema for UAE market
+// Unified data model supporting multi-source ingestion: TecDoc, OEM, Autodoc, UAE Supplier feeds
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
+}
+
+model Brand {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  slug        String       @unique
+  logoUrl     String?
+  country     String?
+  parts       Part[]
+  partNumbers PartNumber[]
+
+  @@index([name])
+}
+
+model AssemblyGroup {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  nameAr        String?
+  productGroups ProductGroup[]
+  parts         Part[]
+
+  @@index([name])
+}
+
+model ProductGroup {
+  id              Int            @id @default(autoincrement())
+  name            String         @unique
+  nameAr          String?
+  assemblyGroupId Int?
+  assemblyGroup   AssemblyGroup? @relation(fields: [assemblyGroupId], references: [id], onDelete: SetNull)
+  parts           Part[]
+
+  @@index([assemblyGroupId])
+  @@index([name])
+}
+
+model Part {
+  id              Int              @id @default(autoincrement())
+  brandId         Int
+  name            String
+  nameAr          String?
+  description     String?
+  specs           Json?            // Technical criteria and dimensions
+  productGroupId  Int?
+  assemblyGroupId Int?
+  
+  brand           Brand            @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  productGroup    ProductGroup?    @relation(fields: [productGroupId], references: [id], onDelete: SetNull)
+  assemblyGroup   AssemblyGroup?   @relation(fields: [assemblyGroupId], references: [id], onDelete: SetNull)
+  
+  partNumbers     PartNumber[]
+  fitments        Fitment[]
+  crossReferences CrossReference[]
+  images          PartImage[]
+  prices          PartPrice[]
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([brandId])
+  @@index([productGroupId])
+  @@index([assemblyGroupId])
+}
+
+enum PartNumberType {
+  OE
+  AFTERMARKET
+  EAN
+  SUPPLIER
+}
+
+model PartNumber {
+  id               Int            @id @default(autoincrement())
+  partId           Int
+  numberRaw        String
+  numberNormalized String         // Uppercase alphanumeric (no spaces, dashes, dots, slashes)
+  type             PartNumberType @default(AFTERMARKET)
+  brandName        String
+  brandId          Int?
+  source           String         // "tecdoc", "oem", "autodoc", "supplier"
+  isPrimary        Boolean        @default(false)
+
+  part             Part           @relation(fields: [partId], references: [id], onDelete: Cascade)
+  brand            Brand?         @relation(fields: [brandId], references: [id], onDelete: SetNull)
+
+  @@unique([partId, numberNormalized, type, brandName])
+  @@index([numberNormalized])
+  @@index([partId])
+  @@index([type])
+  @@index([numberNormalized(ops: raw("gin_trgm_ops"))], type: Gin, map: "PartNumber_numberNormalized_trgm_idx")
+}
+
+enum MarketSpec {
+  GCC
+  EU
+  US
+  GLOBAL
+}
+
+model Vehicle {
+  id                Int        @id @default(autoincrement())
+  make              String     // e.g. Toyota, BMW, Nissan
+  model             String     // e.g. Land Cruiser, Patrol, 3 Series
+  generation        String?    // e.g. LC300, Y62, G20
+  yearFrom          Int?
+  yearTo            Int?
+  engine            String?    // e.g. 3.5L V6 Twin-Turbo, 5.6L V8
+  fuel              String?    // Petrol, Diesel, Hybrid
+  body              String?    // SUV, Sedan, Coupe
+  marketSpec        MarketSpec @default(GCC)
+  externalVehicleId String?    @unique // e.g. TecDoc KType / CarId
+
+  fitments          Fitment[]
+
+  @@index([make])
+  @@index([model])
+  @@index([yearFrom, yearTo])
+  @@index([marketSpec])
+}
+
+enum FitmentConfidence {
+  VERIFIED   // 2 or more sources agree
+  SINGLE     // 1 source
+  UNVERIFIED // Inferred or unconfirmed
+}
+
+model Fitment {
+  id         Int               @id @default(autoincrement())
+  partId     Int
+  vehicleId  Int
+  sources    Json              // string[] e.g. ["tecdoc", "oem_epc"]
+  confidence FitmentConfidence @default(SINGLE)
+  notes      String?
+
+  part       Part              @relation(fields: [partId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([partId, vehicleId])
+  @@index([partId])
+  @@index([vehicleId])
+  @@index([confidence])
+}
+
+model CrossReference {
+  id               Int     @id @default(autoincrement())
+  partId           Int
+  targetPartId     Int?    // Pointer to matched Part if exists in DB
+  targetNumberRaw  String
+  targetNumberNorm String  // Normalized equivalent number
+  brandName        String
+  type             String  @default("EQUIVALENT") // EQUIVALENT, SUPERSEDES, SUPERSEDED_BY
+  source           String  // "tecdoc", "oem", "autodoc"
+
+  part             Part    @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@index([partId])
+  @@index([targetNumberNorm])
+  @@index([targetNumberNorm(ops: raw("gin_trgm_ops"))], type: Gin, map: "CrossReference_targetNumberNorm_trgm_idx")
+}
+
+model PartImage {
+  id           Int      @id @default(autoincrement())
+  partId       Int
+  url          String
+  thumbnailUrl String?
+  isPrimary    Boolean  @default(false)
+  source       String   // "tecdoc", "autodoc", "supplier"
+  altText      String?
+  sortOrder    Int      @default(0)
+
+  part         Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@index([partId])
+  @@index([isPrimary])
+}
+
+model PartPrice {
+  id            Int      @id @default(autoincrement())
+  partId        Int
+  supplier      String   // Internal supplier name (hidden from frontend)
+  cost          Float    // Supplier cost in AED (hidden from frontend)
+  currency      String   @default("AED")
+  marginRule    String   @default("STANDARD_25") // Rule definition (hidden)
+  sellPriceAed  Float    // Final calculated retail price in AED (incl. 5% VAT)
+  stockStatus   String   @default("IN_STOCK") // "IN_STOCK", "2_3_DAYS", "ON_REQUEST"
+  stockQuantity Int      @default(10)
+  updatedAt     DateTime @updatedAt
+
+  part          Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@index([partId])
+  @@index([sellPriceAed])
+}
+
+model SourceRecord {
+  id         Int      @id @default(autoincrement())
+  sourceName String   // e.g. "tecdoc_2q2023", "oem_epc", "autodoc", "dubai_parts_hub"
+  entityType String   // "part", "fitment", "price", "image"
+  rawJson    Json     // Original raw payload for audit and reprocessing
+  fetchedAt  DateTime @default(now())
+
+  @@index([sourceName])
+  @@index([entityType])
+}
+
+model Banner {
+  id         Int      @id @default(autoincrement())
+  title      String
+  titleAr    String?
+  subtitle   String?
+  subtitleAr String?
+  imageUrl   String
+  linkUrl    String?
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model RecentSearch {
+  id        Int      @id @default(autoincrement())
+  userKey   String
+  query     String
+  brandName String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([userKey, query])
+  @@index([userKey, updatedAt])
+}

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "higgsfield": {
+      "serverUrl": "https://mcp.higgsfield.ai/mcp"
+    },
+    "base44": {
+      "serverUrl": "https://app.base44.com/mcp"
+    },
+    "lovable": {
+      "serverUrl": "https://mcp.lovable.dev"
+    },
+    "vercel": {
+      "serverUrl": "https://mcp.vercel.com"
+    }
+  }
+}

@@ -3,7 +3,7 @@ SET @PC_ID = 12423;
     SET @SUP_ID = 268; /* JP GROUP */ 
     SET @LINK_TYPE= 2; /* passenger cars */ 
  SET @COUNTRY_FILTER = '14';
-   SET @LNGID = 16; /* BOSCH 0 001 106 016 */	
+   SET @LNGID = 4; /* BOSCH 0 001 106 016 */	
  
     SELECT DISTINCT
            ARTICLES.ART_ID,

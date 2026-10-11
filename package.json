@@ -1,0 +1,21 @@
+{
+  "name": "tecdoc-2q2023-explorer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix octaspards run dev",
+    "start": "npm --prefix octaspards run dev",
+    "build": "npm --prefix octaspards run build",
+    "prod": "npm --prefix octaspards start",
+    "test": "npm --prefix octaspards test",
+    "typecheck": "npm --prefix octaspards run typecheck",
+    "lint": "npm --prefix octaspards run lint"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "mysql2": "^3.24.5"
+  }
+}

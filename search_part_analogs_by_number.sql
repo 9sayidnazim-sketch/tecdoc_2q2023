@@ -1,6 +1,6 @@
  SET @SEARCH_NUMBER = '5302';
  SET @COUNTRY_FILTER = '4';
-   SET @LNGID = 16;
+   SET @LNGID = 4;
 		SET SESSION group_concat_max_len = 10000000;
 		
     SELECT distinct
@@ -11,10 +11,10 @@
           CONCAT_WS(' ', get_text(ARTICLES.ART_COMPLETE_DES_ID, @LNGID), get_text(ARTICLES.ART_DES_ID, @LNGID) ) AS ART_PRODUCT_NAME,
           #ART_LOOKUP.ARL_KIND AS FOUND_VIA
 					 CASE
-                WHEN ART_LOOKUP.ARL_KIND = 1 THEN 'артикул производителя'
-                WHEN ART_LOOKUP.ARL_KIND = 2 THEN 'торговый номер'
-                WHEN ART_LOOKUP.ARL_KIND = 3 THEN 'оригинальная замена'
-								WHEN ART_LOOKUP.ARL_KIND = 4 THEN 'неоригинальная замена'
+                WHEN ART_LOOKUP.ARL_KIND = 1 THEN 'Manufacturer Article Number'
+                WHEN ART_LOOKUP.ARL_KIND = 2 THEN 'Trade Number'
+                WHEN ART_LOOKUP.ARL_KIND = 3 THEN 'OEM Original Equipment Replacement'
+								WHEN ART_LOOKUP.ARL_KIND = 4 THEN 'Aftermarket Interchange Replacement'
                 END AS 'FOUND_IN'
           
     FROM 

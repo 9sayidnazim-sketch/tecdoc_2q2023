@@ -1,5 +1,5 @@
  SET @ART_ID = 29; /* BOSCH 0 001 106 016 */	
-  SET @LNGID = 16; /* BOSCH 0 001 106 016 */	
+  SET @LNGID = 4; /* BOSCH 0 001 106 016 */	
 		SET SESSION group_concat_max_len = 10000000;
 
    SELECT 

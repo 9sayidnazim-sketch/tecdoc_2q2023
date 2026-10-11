@@ -1,5 +1,5 @@
 SET @PC_ID = 19964;
-SET @LNGID = 16;
+SET @LNGID = 4;
     SET SESSION group_concat_max_len = 10000000;
 
     SELECT

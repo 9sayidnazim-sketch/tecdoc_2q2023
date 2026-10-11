@@ -1,7 +1,7 @@
   SET @PC_ID = 9877; /* BMW, 1 Coupe (E82), M */
     SET @STR_TYPE=1; /* passenger cars */
     SET @LINK_TYPE= 2; /* passenger cars */
-SET @LNGID = 16;
+SET @LNGID = 4;
 
     SELECT DISTINCT
          SEARCH_TREE.STR_LEVEL,
